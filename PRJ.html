@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Your Order</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f3f6fb;
+    color: #222;
+}
+
+header {
+    background: #172554;
+    color: white;
+    padding: 22px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h2 {
+    font-size: 25px;
+}
+
+header span {
+    color: #60a5fa;
+}
+
+header p {
+    font-size: 14px;
+}
+
+.container {
+    max-width: 850px;
+    margin: 45px auto;
+    padding: 20px;
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.heading h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #172554;
+}
+
+.heading p {
+    color: #666;
+}
+
+.search-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px #00000010;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 15px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #2563eb;
+}
+
+.search-box button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 14px 25px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.search-box button:hover {
+    background: #1d4ed8;
+}
+
+.result {
+    display: none;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px #00000010;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.order-header h3 {
+    color: #172554;
+}
+
+.status {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail p {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.detail h4 {
+    font-size: 16px;
+}
+
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 45px 0 30px;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    height: 4px;
+    background: #ddd;
+    top: 17px;
+    left: 10%;
+    right: 10%;
+}
+
+.progress-line {
+    position: absolute;
+    height: 4px;
+    background: #2563eb;
+    top: 17px;
+    left: 10%;
+    width: 0%;
+    transition: width 0.5s;
+}
+
+.step {
+    text-align: center;
+    position: relative;
+    width: 25%;
+    z-index: 1;
+}
+
+.circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ddd;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.step.active .circle {
+    background: #2563eb;
+}
+
+.step h4 {
+    font-size: 13px;
+}
+
+.step p {
+    color: #888;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.delivery {
+    background: #eff6ff;
+    padding: 18px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.delivery h3 {
+    color: #1d4ed8;
+    margin-bottom: 8px;
+}
+
+.error {
+    color: #dc2626;
+    text-align: center;
+    margin-bottom: 15px;
+    display: none;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #888;
+}
+
+@media(max-width:600px) {
+    header {
+        padding: 18px 5%;
+    }
+
+    .heading h1 {
+        font-size: 25px;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .details {
+        grid-template-columns: 1fr;
+    }
+
+    .step h4 {
+        font-size: 10px;
+    }
+
+    .step p {
+        font-size: 9px;
+    }
+
+    .circle {
+        width: 32px;
+        height: 32px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Swift<span>Track</span></h2>
+    <p>Customer Portal</p>
+</header>
+
+<div class="container">
+
+    <div class="heading">
+        <h1>Track Your Order</h1>
+        <p>Enter your order ID to check your delivery status.</p>
+    </div>
+
+    <div
+class="search-box">
+        <input type="text" id="orderInput"
+        placeholder="Enter Order ID (Example: ORD101)">
+        <button onclick="trackOrder()">Track Order</button>
+    </div>
+
+    <p class="error" id="error">
+        Invalid Order ID! Please try again.
+    </p>
+
+    <div class="result" id="result">
+
+        <div class="card">
+            <div class="order-header">
+                <h3>Order Details</h3>
+                <span class="status" id="status">Shipped</span>
+            </div>
+
+            <div class="details">
+                <div class="detail">
+                    <p>ORDER ID</p>
+                    <h4 id="orderId"></h4>
+                </div>
+
+                <div class="detail">
+                    <p>PRODUCT</p>
+                    <h4 id="product"></h4>
+                </div>
+
+                <div class="detail">
+                    <p>ORDER DATE</p>
+                    <h4 id="date"></h4>
+                </div>
+
+                <div class="detail">
+                    <p>DELIVERY DATE</p>
+                    <h4 id="deliveryDate"></h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Delivery Progress</h3>
+
+            <div class="timeline">
+
+                <div class="progress-line" id="progress"></div>
+
+                <div class="step">
+                    <div class="circle">✓</div>
+                    <h4>Confirmed</h4>
+                    <p>Order placed</p>
+                </div>
+
+                <div class="step">
+                    <div class="circle">✓</div>
+                    <h4>Packed</h4>
+                    <p>Order packed</p>
+                </div>
+
+                <div class="step">
+                    <div class="circle">✓</div>
+                    <h4>Shipped</h4>
+                    <p>On the way</p>
+                </div>
+
+                <div class="step">
+                    <div class="circle">✓</div>
+                    <h4>Delivered</h4>
+                    <p>Successfully</p>
+                </div>
+
+            </div>
+
+            <div class="delivery">
+                <h3 id="deliveryHeading">Your order is on the way!</h3>
+                <p id="deliveryMessage">
+                    Your package has been shipped.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 SwiftTrack | Order Tracking System
+</footer>
+
+<script>
+
+// Sample order database
+const orders = {
+    "ORD101": {
+        product: "Wireless Headphones",
+        date: "20 Nov 2026",
+        delivery: "25 Nov 2026",
+        status: 2
+    },
+
+    "ORD102": {
+        product: "Smart Watch",
+        date: "19 Nov 2026",
+        delivery: "24 Nov 2026",
+        status: 1
+    },
+
+    "ORD103": {
+        product: "Laptop",
+        date: "18 Nov 2026",
+        delivery: "23 Nov 2026",
+        status: 3
+    },
+
+    "ORD104": {
+        product: "Bluetooth Speaker",
+        date: "17 Nov 2026",
+        delivery: "22 Nov 2026",
+        status: 4
+    }
+};
+
+function trackOrder() {
+
+    let id = document.getElementById("orderInput")
+        .value.trim().toUpperCase();
+
+    let result = document.getElementById("result");
+    let error = document.getElementById("error");
+
+    if (orders[id]) {
+
+        let order = orders[id];
+
+        result.style.display = "block";
+        error.style.display = "none";
+
+        document.getElementById("orderId").innerText = id;
+        document.getElementById("product").innerText = order.product;
+        document.getElementById("date").innerText = order.date;
+        document.getElementById("deliveryDate").innerText = order.delivery;
+
+        let names = [
+            "Confirmed",
+            "Packed",
+            "Shipped",
+            "Delivered"
+        ];
+
+        let messages = [
+            "Your order has been confirmed.",
+            "Your order is packed and ready to ship.",
+            "Your package has been shipped and is on the way!",
+            "Your order has been successfully delivered!"
+        ];
+
+        document.getElementById("status").innerText =
+names[order.status - 1];
+
+        document.getElementById("deliveryHeading").innerText =
+            names[order.status - 1];
+
+        document.getElementById("deliveryMessage").innerText =
+            messages[order.status - 1];
+
+        let steps = document.querySelectorAll(".step");
+
+        steps.forEach((step, index) => {
+            step.classList.toggle(
+                "active",
+                index < order.status
+            );
+        });
+
+        document.getElementById("progress").style.width =
+            ((order.status - 1) / 3 * 80) + "%";
+
+    } else {
+
+        result.style.display = "none";
+        error.style.display = "block";
+
+    }
+}
+
+// Press Enter to track
+document.getElementById("orderInput")
+.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        trackOrder();
+    }
+});
+
+</script>
+
+</body>
+</html>
